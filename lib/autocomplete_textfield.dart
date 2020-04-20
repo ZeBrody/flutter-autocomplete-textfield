@@ -22,7 +22,7 @@ class AutoCompleteTextField<T> extends StatefulWidget {
   final AutoCompleteOverlayItemBuilder<T> itemBuilder;
   final int suggestionsAmount;
   final GlobalKey<AutoCompleteTextFieldState<T>> key;
-  final bool submitOnSuggestionTap, clearOnSubmit;
+  final bool submitOnSuggestionTap, clearOnSubmit, updateTextOnSuggestionTap;
   final List<TextInputFormatter> inputFormatters;
   final int minLength;
 
@@ -58,6 +58,8 @@ class AutoCompleteTextField<T> extends StatefulWidget {
           5, //The amount of suggestions to show, larger values may result in them going off screen
       this.submitOnSuggestionTap:
           true, //Call textSubmitted on suggestion tap, itemSubmitted will be called no matter what
+      this.updateTextOnSuggestionTap:
+          true, //Update the textfields text with the toString representation of the tapped suggestion
       this.clearOnSubmit: true, //Clear autoCompleteTextfield on submit
       this.textInputAction: TextInputAction.done,
       this.textCapitalization: TextCapitalization.sentences,
@@ -103,6 +105,7 @@ class AutoCompleteTextField<T> extends StatefulWidget {
       itemFilter,
       suggestionsAmount,
       submitOnSuggestionTap,
+      updateTextOnSuggestionTap,
       clearOnSubmit,
       minLength,
       inputFormatters,
@@ -130,7 +133,7 @@ class AutoCompleteTextFieldState<T> extends State<AutoCompleteTextField> {
   Filter<T> itemFilter;
   int suggestionsAmount;
   int minLength;
-  bool submitOnSuggestionTap, clearOnSubmit;
+  bool submitOnSuggestionTap, clearOnSubmit, updateTextOnSuggestionTap;
   TextEditingController controller;
   FocusNode focusNode;
 
@@ -154,6 +157,7 @@ class AutoCompleteTextFieldState<T> extends State<AutoCompleteTextField> {
       this.itemFilter,
       this.suggestionsAmount,
       this.submitOnSuggestionTap,
+      this.updateTextOnSuggestionTap,
       this.clearOnSubmit,
       this.minLength,
       this.inputFormatters,
@@ -321,17 +325,23 @@ class AutoCompleteTextFieldState<T> extends State<AutoCompleteTextField> {
                                   onTap: () {
                                     setState(() {
                                       if (submitOnSuggestionTap) {
-                                        String newText = suggestion.toString();
-                                        textField.controller.text = newText;
+                                        if (updateTextOnSuggestionTap) {
+                                          String newText =
+                                              suggestion.toString();
+                                          textField.controller.text = newText;
+                                        }
                                         textField.focusNode.unfocus();
                                         itemSubmitted(suggestion);
                                         if (clearOnSubmit) {
                                           clear();
                                         }
                                       } else {
-                                        String newText = suggestion.toString();
-                                        textField.controller.text = newText;
-                                        textChanged(newText);
+                                        if (updateTextOnSuggestionTap) {
+                                          String newText =
+                                              suggestion.toString();
+                                          textField.controller.text = newText;
+                                          textChanged(newText);
+                                        }
                                       }
                                     });
                                   }))
@@ -403,6 +413,7 @@ class SimpleAutoCompleteTextField extends AutoCompleteTextField<String> {
       @required List<String> suggestions,
       int suggestionsAmount: 5,
       bool submitOnSuggestionTap: true,
+      bool updateTextOnSuggestionTap: true,
       bool clearOnSubmit: true,
       TextInputAction textInputAction: TextInputAction.done,
       TextCapitalization textCapitalization: TextCapitalization.sentences})
@@ -439,6 +450,7 @@ class SimpleAutoCompleteTextField extends AutoCompleteTextField<String> {
       },
           suggestionsAmount,
           submitOnSuggestionTap,
+          updateTextOnSuggestionTap,
           clearOnSubmit,
           minLength,
           [],
