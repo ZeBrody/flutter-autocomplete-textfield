@@ -298,7 +298,7 @@ class AutoCompleteTextFieldState<T> extends State<AutoCompleteTextField> {
 
   void updateSuggestions(List<T> suggestions) {
     this.suggestions = suggestions;
-    updateOverlay(currentText);
+    //updateOverlay(currentText);
   }
 
   void updateOverlay([String query]) {
